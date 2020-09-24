@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping(value = "/api")
@@ -68,6 +70,22 @@ public class ElasticExController implements ElasticExApi {
         var response = new ErrorResponse(message, LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @GetMapping("/random-error")
+    public ResponseEntity<String> randomError() {
+        int remainder = new Random().nextInt() % 5;
+        var body = "Kibana";
+
+        switch (remainder) {
+            case 0:
+                return ResponseEntity.ok().body(body);
+            case 1:
+            case 2:
+                return ResponseEntity.badRequest().body(body);
+            default:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        }
     }
 
 }
